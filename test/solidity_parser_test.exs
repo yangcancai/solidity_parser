@@ -6,7 +6,9 @@ defmodule SolidityParserTest do
     assert SolidityParser.hello() == :world
   end
   test "parse solidity" do
-   check_parse(:ok, """
+   _check_parse( [
+    function: "function closeAnnouncement(uint256 id) onlyOwner external {\n  /*\n      Close announcement. It can be closed only by those in the admin list. Windup is allowed only after the announcement is completed.\n      @id     Announcement identification\n  */\n  require( announcements[id].open && announcements[id].end < block.number );\n  if ( ! checkOpposited(announcements[id].oppositionWeight, announcements[id].oppositable) ) {\n      announcements[id].result = true;\n      if ( announcements[id].Type == announcementType.newModule ) {\n          require( moduleHandler(moduleHandlerAddress).newModule(announcements[id]._str, announcements[id]._addr, true, true) );\n      } else if ( announcements[id].Type == announcementType.dropModule ) {\n          require( moduleHandler(moduleHandlerAddress).dropModule(announcements[id]._str, true) );\n      } else if ( announcements[id].Type == announcementType.replaceModule ) {\n          require( moduleHandler(moduleHandlerAddress).replaceModule(announcements[id]._str, announcements[id]._addr, true) );\n      } else if ( announcements[id].Type == announcementType.replaceModuleHandler) {\n          require( moduleHandler(moduleHandlerAddress).replaceModuleHandler(announcements[id]._addr) );\n      } else if ( announcements[id].Type == announcementType.transactionFeeRate ||\n                  announcements[id].Type == announcementType.transactionFeeMin ||\n                  announcements[id].Type == announcementType.transactionFeeMax ||\n                  announcements[id].Type == announcementType.transactionFeeBurn ) {\n          require( moduleHandler(moduleHandlerAddress).configureModule(\"token\", announcements[id].Type, announcements[id]._uint) );\n      } else if ( announcements[id].Type == announcementType.providerPublicFunds ||\n                  announcements[id].Type == announcementType.providerPrivateFunds ||\n                  announcements[id].Type == announcementType.providerPrivateClientLimit ||\n                  announcements[id].Type == announcementType.providerPublicMinRate ||\n                  announcements[id].Type == announcementType.providerPublicMaxRate ||\n                  announcements[id].Type == announcementType.providerPrivateMinRate ||\n                  announcements[id].Type == announcementType.providerPrivateMaxRate ||\n                  announcements[id].Type == announcementType.providerGasProtect ||\n                  announcements[id].Type == announcementType.providerInterestMinFunds ||\n                  announcements[id].Type == announcementType.providerRentRate ) {\n          require( moduleHandler(moduleHandlerAddress).configureModule(\"provider\", announcements[id].Type, announcements[id]._uint) );\n      } else if ( announcements[id].Type == announcementType.schellingRoundBlockDelay ||\n                  announcements[id].Type == announcementType.schellingCheckRounds ||\n                  announcements[id].Type == announcementType.schellingCheckAboves ||\n                  announcements[id].Type == announcementType.schellingRate ) {\n          require( moduleHandler(moduleHandlerAddress).configureModule(\"schelling\", announcements[id].Type, announcements[id]._uint) );\n      } else if ( announcements[id].Type == announcementType.publisherMinAnnouncementDelay) {\n          minAnnouncementDelay = announcements[id]._uint;\n      } else if ( announcements[id].Type == announcementType.publisherOppositeRate) {\n          oppositeRate = uint8(announcements[id]._uint);\n}\n}\n  announcements[id].end = block.number;\n  announcements[id].open = false;\n}\n"
+  ], """
       function closeAnnouncement(uint256 id) onlyOwner external {
         /*
             Close announcement. It can be closed only by those in the admin list. Windup is allowed only after the announcement is completed.
@@ -100,6 +102,10 @@ defmodule SolidityParserTest do
     # assert :ok == 1
   end
 
+ defp _check_parse(expect, str) do
+     res = SolidityParser.parse_code(str)
+    assert expect == res
+  end
 
   defp check_parse(expect, str) do
     {:ok, tokens, _} = :solidity_leex.string(String.to_charlist(str))

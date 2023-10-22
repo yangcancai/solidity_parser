@@ -69,7 +69,8 @@ rbrace_res -> rbrace_semicolon: '$1'.
 comment_block -> comment_start others comment_end: [value_of('$1'),'$2',value_of('$3')].
 Erlang code.
 
-value_of({_,_, V}) -> V;
+value_of({_,_, V}) -> 
+  unicode:characters_to_binary(V);
 value_of(V) -> V.
 
 add(struct, A) ->

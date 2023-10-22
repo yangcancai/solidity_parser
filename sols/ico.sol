@@ -291,7 +291,7 @@ contract ico is safeMath {
 
             If there is not at least 0.2 ether balance on the beneficiaryAddress then the amount of the ether which was intended for the purchase will be reduced by 0.2 and that will be sent to the address of the beneficiary.
             From the remaining amount calculate the reward with the help of the getIcoReward function.
-            Only that affiliate address is valid which has some token on it’s account.
+            kkOnly that affiliate address is valid which has some token on its account.
             If there is a valid affiliate address then calculate and credit the reward as well in the following way:
             With more than 1e12 token contract credit 5% reward based on the calculation that how many tokens did they buy when he was added as an affiliate.
                 More than 1e11 token: 4%
